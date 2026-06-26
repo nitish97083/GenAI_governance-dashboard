@@ -1,5 +1,5 @@
 const oracledb = require('oracledb');
-require('dotenv').config();
+const config = require('./config');
 
 // Color codes for console output
 const colors = {
@@ -15,11 +15,7 @@ async function testConnection() {
   console.log(`Oracle Database Connection Test`);
   console.log(`========================================${colors.reset}\n`);
 
-  const dbConfig = {
-    user: process.env.DB_USER || 'system',
-    password: process.env.DB_PASSWORD || 'oracle',
-    connectString: process.env.DB_CONNECTION_STRING || 'localhost:1521/xe'
-  };
+  const dbConfig = config.database;
 
   console.log(`${colors.yellow}Connection Details:${colors.reset}`);
   console.log(`  User: ${dbConfig.user}`);

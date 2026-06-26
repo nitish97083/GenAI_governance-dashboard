@@ -10,6 +10,11 @@ async function initializePool() {
     oracledb.autoCommit = true;
 
     if (!connectionPool) {
+      if (!config.database.connectString) {
+        throw new Error('Oracle connection string is not configured. Set DB_CONNECTION_STRING in .env');
+      }
+
+      console.log(`Connecting to Oracle using ${config.database.user}@${config.database.connectString}`);
       connectionPool = await oracledb.createPool({
         user: config.database.user,
         password: config.database.password,
