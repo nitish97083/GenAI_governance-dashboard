@@ -20,11 +20,9 @@ let connectionPool;
 
 async function initializeConnectionPool() {
   try {
-    connectionPool = await oracledb.createPool({
-      user: process.env.DB_USER || 'system',
-      password: process.env.DB_PASSWORD || 'oracle',
-      connectString: process.env.DB_CONNECTION_STRING || 'localhost:1521/xe'
-    });
+    // Use centralized pool initializer from database/connection.js
+    const db = require('./database/connection');
+    connectionPool = await db.initializePool();
     console.log('Oracle Database Connection Pool Created Successfully');
   } catch (err) {
     console.error('Error creating connection pool:', err);

@@ -5,6 +5,10 @@ let connectionPool;
 
 async function initializePool() {
   try {
+    // ensure oracledb defaults
+    oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+    oracledb.autoCommit = true;
+
     if (!connectionPool) {
       connectionPool = await oracledb.createPool({
         user: config.database.user,
@@ -12,8 +16,7 @@ async function initializePool() {
         connectString: config.database.connectString,
         max: 10,
         min: 2,
-        increment: 1,
-        poolAlias: 'default'
+        increment: 1
       });
       console.log('Oracle Connection Pool initialized');
     }
