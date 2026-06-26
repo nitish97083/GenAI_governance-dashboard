@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '@app/services/api.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <div class="login-container">
       <section class="login-content">
@@ -46,9 +46,12 @@ import { ApiService } from '@app/services/api.service';
             <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
           </form>
 
-          <p class="signup-link">
-            Don't have an account? <a routerLink="/register">Sign up here</a>
-          </p>
+          <div class="login-footer">
+            <a routerLink="/forgot-password">Forgot password?</a>
+            <p class="signup-link">
+              Don't have an account? <a routerLink="/register">Sign up here</a>
+            </p>
+          </div>
         </div>
       </section>
     </div>
@@ -78,15 +81,24 @@ export class LoginComponent {
           if (response.user) {
             this.apiService.setCurrentUser(response.user);
           }
-          this.successMessage = 'Login successful!';
+          this.successMessage = 'Login successful! Redirecting to your portal...';
           setTimeout(() => {
-            this.router.navigate(['/']);
+            const role = response.user?.role;
+            if (role === 'student') {
+              this.router.navigate(['/students']);
+            } else if (role === 'faculty') {
+              this.router.navigate(['/faculty']);
+            } else if (role === 'admin') {
+              this.router.navigate(['/admin']);
+            } else {
+              this.router.navigate(['/home']);
+            }
           }, 1000);
         }
         this.loading = false;
       },
       (error) => {
-        this.errorMessage = 'Invalid email or password';
+        this.errorMessage = error?.error?.message || 'Invalid email or password';
         this.loading = false;
       }
     );

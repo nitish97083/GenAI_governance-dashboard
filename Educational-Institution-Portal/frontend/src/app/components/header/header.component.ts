@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ApiService } from '@app/services/api.service';
 
 @Component({
   selector: 'app-header',
@@ -26,12 +27,34 @@ import { CommonModule } from '@angular/common';
           </ul>
         </nav>
         <div class="nav-actions">
-          <button class="btn-login" routerLink="/login">Login</button>
-          <button class="btn-register" routerLink="/register">Register</button>
+          <ng-container *ngIf="currentUser$ | async as currentUser; else guestActions">
+            <div class="user-summary">
+              <span class="user-name">Hello, {{ currentUser.name }}</span>
+              <span class="portal-label">{{ currentUser.role === 'admin' ? 'Admin Portal' : currentUser.role === 'faculty' ? 'Faculty Portal' : currentUser.role === 'student' ? 'Student Portal' : currentUser.role === 'parent' ? 'Parent Portal' : 'Portal' }}</span>
+            </div>
+            <button class="btn-portal" [routerLink]="currentUser.role === 'student' ? '/students' : currentUser.role === 'faculty' ? '/faculty' : currentUser.role === 'admin' ? '/admin' : '/home'">My Portal</button>
+            <button class="btn-logout" (click)="logout()">Logout</button>
+          </ng-container>
+          <ng-template #guestActions>
+            <button class="btn-login" routerLink="/login">Login</button>
+            <button class="btn-register" routerLink="/register">Register</button>
+          </ng-template>
         </div>
       </div>
     </header>
   `,
   styleUrls: ['../header.scss']
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+  currentUser$ = this.apiService.currentUser$;
+
+  constructor(
+    private apiService: ApiService,
+    private router: Router
+  ) {}
+
+  logout(): void {
+    this.apiService.logout();
+    this.router.navigate(['/home']);
+  }
+}

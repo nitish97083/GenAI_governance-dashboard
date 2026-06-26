@@ -98,7 +98,7 @@ router.post(
       .matches(/[A-Z]/).withMessage('Password must contain an uppercase letter')
       .matches(/[0-9]/).withMessage('Password must contain a number')
       .matches(/[^A-Za-z0-9]/).withMessage('Password must contain a special character'),
-    body('role').optional().isIn(['student', 'admin', 'faculty']).withMessage('Role must be student, admin, or faculty')
+    body('role').optional().isIn(['student', 'admin', 'faculty', 'parent']).withMessage('Role must be student, admin, faculty, or parent')
   ],
   validate,
   async (req, res) => {
